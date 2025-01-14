@@ -3,28 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OCR with Text Highlighting and Drive Upload</title>
+    <title>MarkMate</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+    /* General Body Styling */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f4f8;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+        line-height: 1.6;
+        animation: fadeIn 1s ease-in;
+    }
+
+    /* Animation for body fade-in */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
         }
-        #output {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            background-color: #f9f9f9;
+        to {
+            opacity: 1;
         }
-        .line {
-            cursor: pointer;
+    }
+
+    /* Page Title */
+    h1 {
+        text-align: center;
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 20px;
+        animation: slideDown 1s ease-in-out;
+    }
+
+    /* Animation for title slide-down */
+    @keyframes slideDown {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
         }
-        .highlighted {
-            background-color: yellow;
+        to {
+            transform: translateY(0);
+            opacity: 1;
         }
-    </style>
+    }
+
+    /* Form Styling */
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+        animation: zoomIn 0.8s ease-in-out;
+    }
+
+    /* Animation for form zoom-in */
+    @keyframes zoomIn {
+        from {
+            transform: scale(0.9);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    label {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    input[type="file"] {
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #333;
+        cursor: pointer;
+        transition: border-color 0.3s ease;
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    input[type="file"]:hover {
+        border-color: #007bff;
+    }
+
+    button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        animation: bounceIn 0.8s ease-in-out;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    /* Animation for button bounce-in */
+    @keyframes bounceIn {
+        from {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.1);
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    /* Output Section */
+    #output {
+        margin: 20px auto;
+        max-width: 600px;
+        background: #fff;
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        animation: slideUp 0.8s ease-out;
+    }
+
+    /* Animation for output slide-up */
+    @keyframes slideUp {
+        from {
+            transform: translateY(50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    #output h2 {
+        margin-top: 0;
+        font-size: 1.5rem;
+        color: #333;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+    }
+
+    /* Lines of Text */
+    .line {
+        padding: 8px;
+        margin: 8px 0;
+        border: 1px solid #eee;
+        border-radius: 5px;
+        background-color: #f8f9fa;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+        cursor: pointer;
+        animation: fadeInUp 0.6s ease-in-out;
+    }
+
+    .line:hover {
+        background-color: #e9ecef;
+        border-color: #007bff;
+    }
+
+    .highlighted {
+        background-color: #007bff;
+        color: #fff;
+        border-color: #0056b3;
+        font-weight: bold;
+    }
+
+    /* Animation for lines fade-in-up */
+    @keyframes fadeInUp {
+        from {
+            transform: translateY(10px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    /* Save Button Styling */
+    #saveButton {
+        display: block;
+        margin: 15px auto;
+        max-width: 300px;
+        padding: 10px 15px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        animation: popIn 0.8s ease-in-out;
+    }
+
+    #saveButton:hover {
+        background-color: #0056b3;
+    }
+
+    /* Animation for save button pop-in */
+    @keyframes popIn {
+        from {
+            transform: scale(0.9);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+</style>
+
 </head>
 <body>
-    <h1>OCR, Highlight Text, and Save to Drive</h1>
+    <h1>MarkMate</h1>
     <form id="fileUploadForm">
         <label for="fileInput">Choose a file:</label>
         <input type="file" id="fileInput" accept="image/*,application/pdf" required>
@@ -41,16 +249,6 @@
     <script>
         let highlightedLines = [];
 
-        // Initialize Google API
-        function initGoogleAPI() {
-            gapi.load('client:auth2', async () => {
-                await gapi.client.init({
-                    apiKey: 'YOUR_API_KEY',
-                    clientId: 'YOUR_CLIENT_ID.apps.googleusercontent.com',
-                    scope: 'https://www.googleapis.com/auth/drive.file',
-                });
-            });
-        }
 
         document.getElementById('uploadButton').addEventListener('click', async () => {
             const fileInput = document.getElementById('fileInput');
