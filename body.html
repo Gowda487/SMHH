@@ -249,6 +249,15 @@
     <script>
         let highlightedLines = [];
 
+        // Initialize Google API
+        function initGoogleAPI() {
+            gapi.load('client:auth2', async () => {
+                await gapi.client.init({
+                    apiKey: 
+                    clientId: 
+                    scope: 'https://www.googleapis.com/auth/drive.file',
+                });
+}
 
         document.getElementById('uploadButton').addEventListener('click', async () => {
             const fileInput = document.getElementById('fileInput');
