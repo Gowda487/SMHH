@@ -4,358 +4,299 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MarkMate</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.0/tesseract.min.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
     <style>
-    /* General Body Styling */
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f0f4f8;
-        color: #333;
-        margin: 0;
-        padding: 20px;
-        line-height: 1.6;
-        animation: fadeIn 1s ease-in;
-    }
-
-    /* Animation for body fade-in */
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        to {
-            opacity: 1;
+    
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
         }
-    }
-
-    /* Page Title */
-    h1 {
-        text-align: center;
-        font-size: 2rem;
-        color: #333;
-        margin-bottom: 20px;
-        animation: slideDown 1s ease-in-out;
-    }
-
-    /* Animation for title slide-down */
-    @keyframes slideDown {
-        from {
-            transform: translateY(-50px);
-            opacity: 0;
+    
+        h1 {
+            color: #3498db;
+            font-size: 3em;
+            margin-bottom: 20px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
-        to {
-            transform: translateY(0);
-            opacity: 1;
+    
+        h2 {
+            color: #34495e;
+            font-size: 1.6em;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-transform: capitalize;
         }
-    }
-
-    /* Form Styling */
-    form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 20px;
-        animation: zoomIn 0.8s ease-in-out;
-    }
-
-    /* Animation for form zoom-in */
-    @keyframes zoomIn {
-        from {
-            transform: scale(0.9);
-            opacity: 0;
+    
+        .file-upload-container {
+            margin-bottom: 20px;
         }
-        to {
-            transform: scale(1);
-            opacity: 1;
-        }
-    }
-
-    label {
-        font-size: 1rem;
-        font-weight: bold;
-        color: #333;
-    }
-
+    
+         /* Styling for file input */
     input[type="file"] {
-        padding: 10px;
-        font-size: 14px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
+        padding: 12px 24px;
+        font-size: 1.2em;
+        border-radius: 8px;
+        border: 2px solid #3498db;
         background-color: #fff;
-        color: #333;
         cursor: pointer;
-        transition: border-color 0.3s ease;
-        animation: fadeIn 0.5s ease-in;
+        transition: all 0.3s ease;
+        width: 300px;
+        text-align: center;
+        margin-bottom: 0; /* Remove bottom margin */
     }
-
-    input[type="file"]:hover {
-        border-color: #007bff;
-    }
-
-    button {
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        padding: 10px 15px;
-        font-size: 14px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        animation: bounceIn 0.8s ease-in-out;
-    }
-
-    button:hover {
-        background-color: #0056b3;
-    }
-
-    button:disabled {
-        background-color: #ccc;
-        cursor: not-allowed;
-    }
-
-    /* Animation for button bounce-in */
-    @keyframes bounceIn {
-        from {
-            transform: scale(0.8);
-            opacity: 0;
+    
+        input[type="file"]:hover {
+            border-color: #2980b9;
+            transform: scale(1.05);
         }
-        50% {
-            transform: scale(1.1);
+    
+        input[type="file"]:focus {
+            outline: none;
+            border-color: #2980b9;
+            box-shadow: 0 0 5px rgba(41, 128, 185, 0.5);
         }
-        to {
-            transform: scale(1);
-            opacity: 1;
+    
+        /* Styling for the text output area */
+        #ocrOutput {
+            border: 2px solid #ccc;
+            padding: 20px;
+            width: 100%;
+            max-width: 900px;
+            height: 300px;
+            overflow-y: auto;
+            background-color: #fff;
+            color: #333;
+            font-size: 1.2em;
+            line-height: 1.6;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            resize: vertical;
+            margin-top: 20px;
+            transition: all 0.3s ease;
         }
-    }
-
-    /* Output Section */
-    #output {
-        margin: 20px auto;
-        max-width: 600px;
-        background: #fff;
-        padding: 15px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        animation: slideUp 0.8s ease-out;
-    }
-
-    /* Animation for output slide-up */
-    @keyframes slideUp {
-        from {
-            transform: translateY(50px);
-            opacity: 0;
+    
+        #ocrOutput:empty {
+            color: #aaa;
+            text-align: center;
         }
-        to {
-            transform: translateY(0);
-            opacity: 1;
+    
+        #ocrOutput:hover {
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
         }
-    }
-
-    #output h2 {
-        margin-top: 0;
-        font-size: 1.5rem;
-        color: #333;
-        border-bottom: 2px solid #007bff;
-        padding-bottom: 5px;
-        margin-bottom: 15px;
-    }
-
-    /* Lines of Text */
-    .line {
-        padding: 8px;
-        margin: 8px 0;
-        border: 1px solid #eee;
-        border-radius: 5px;
-        background-color: #f8f9fa;
-        transition: background-color 0.3s ease, border-color 0.3s ease;
-        cursor: pointer;
-        animation: fadeInUp 0.6s ease-in-out;
-    }
-
-    .line:hover {
-        background-color: #e9ecef;
-        border-color: #007bff;
-    }
-
-    .highlighted {
-        background-color: #007bff;
-        color: #fff;
-        border-color: #0056b3;
-        font-weight: bold;
-    }
-
-    /* Animation for lines fade-in-up */
-    @keyframes fadeInUp {
-        from {
-            transform: translateY(10px);
-            opacity: 0;
+    
+        /* Highlighted text styling */
+        .highlighted-text {
+            background-color: yellow;
+            padding: 0 4px;
+            border-radius: 4px;
         }
-        to {
-            transform: translateY(0);
-            opacity: 1;
+    
+        /* Styling for the save button */
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 14px 24px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
+            margin-top: 20px;
+            width: 300px;
         }
-    }
-
-    /* Save Button Styling */
-    #saveButton {
-        display: block;
-        margin: 15px auto;
-        max-width: 300px;
-        padding: 10px 15px;
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        font-size: 14px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        animation: popIn 0.8s ease-in-out;
-    }
-
-    #saveButton:hover {
-        background-color: #0056b3;
-    }
-
-    /* Animation for save button pop-in */
-    @keyframes popIn {
-        from {
-            transform: scale(0.9);
-            opacity: 0;
+    
+        button:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
         }
-        to {
-            transform: scale(1);
-            opacity: 1;
+    
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
         }
-    }
-</style>
-
+    
+        /* Add subtle hover effect for the whole page */
+        body:hover {
+            background-color: #eef2f7;
+            transition: all 0.3s ease;
+        }
+    
+        /* Enhanced container for file input and button */
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            text-align: center;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+        }
+    
+        /* Add some space between elements for a cleaner layout */
+        .file-upload-container,
+        .editable-text-container,
+        .button-container {
+            margin-bottom: 30px;
+        }
+    
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            input[type="file"] {
+                width: 90%;
+                padding: 10px 20px;
+            }
+    
+            button {
+                width: 90%;
+                font-size: 1.2em;
+                padding: 12px 20px;
+            }
+    
+            #ocrOutput {
+                width: 90%;
+                font-size: 1.1em;
+                height: 250px;
+            }
+        }
+    </style>
+    
 </head>
 <body>
     <h1>MarkMate</h1>
-    <form id="fileUploadForm">
-        <label for="fileInput">Choose a file:</label>
-        <input type="file" id="fileInput" accept="image/*,application/pdf" required>
-        <button type="button" id="uploadButton">Upload and Extract Text</button>
-    </form>
-    <div id="output">
-        <h2>Extracted Text (Click lines to highlight):</h2>
-        <div id="ocrText"></div>
+
+    <!-- File upload input -->
+    <div class="file-upload-container">
+        <input type="file" id="fileInput" accept="image/*, .pdf">
     </div>
-    <button id="saveButton" style="margin-top: 20px;" disabled>Save Highlighted Text to Drive</button>
 
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js/dist/tesseract.min.js"></script>
-    <script src="https://apis.google.com/js/api.js"></script>
+    <!-- Editable and highlightable output -->
+    <div>
+        <h2>Editable and Highlightable Text</h2>
+        <div id="ocrOutput" contenteditable="true">
+            Upload a file to extract and edit text here...
+        </div>
+    </div>
+    <br>
+
+    <!-- Save to Drive button -->
+    <button id="saveButton">Save to Drive</button>
+
     <script>
-        let highlightedLines = [];
+        const CLIENT_ID = '97916725195-f5nsihkcbu6fekmf5cgadjt0j4kv1vli.apps.googleusercontent.com'; // Replace with your client ID
+        const API_KEY = 'AIzaSyB-8QpgkI2K5WjOn5LTY4pxYmwVwA-ef3o'; // Replace with your API key
+        const SCOPES = 'https://www.googleapis.com/auth/drive.file';
 
-        // Initialize Google API
-        function initGoogleAPI() {
-            gapi.load('client:auth2', async () => {
-                await gapi.client.init({
-                    apiKey: 
-                    clientId: 
-                    scope: 'https://www.googleapis.com/auth/drive.file',
-                });
-}
+        const fileInput = document.getElementById('fileInput');
+        const ocrOutput = document.getElementById('ocrOutput');
+        const saveButton = document.getElementById('saveButton');
 
-        document.getElementById('uploadButton').addEventListener('click', async () => {
-            const fileInput = document.getElementById('fileInput');
-            const ocrTextContainer = document.getElementById('ocrText');
-            const saveButton = document.getElementById('saveButton');
+        function gapiLoad() {
+            gapi.load('client:auth2', initClient);
+        }
 
-            if (fileInput.files.length === 0) {
-                alert('Please select a file.');
-                return;
-            }
+        function initClient() {
+            gapi.client.init({
+                apiKey: API_KEY,
+                clientId: CLIENT_ID,
+                scope: SCOPES,
+            }).then(() => {
+                console.log('Google API client initialized');
+            }).catch((error) => {
+                console.error('Error initializing Google API client', error);
+            });
+        }
 
-            const file = fileInput.files[0];
-
-            if (!file.type.startsWith('image/')) {
-                alert('Please upload a valid image file.');
-                return;
-            }
-
-            ocrTextContainer.textContent = 'Processing...';
-            saveButton.disabled = true;
-
-            try {
-                const reader = new FileReader();
-                reader.onload = async (e) => {
-                    const imgData = e.target.result;
-                    const result = await Tesseract.recognize(imgData, 'eng', {
-                        logger: info => console.log(info), // Logs OCR progress
-                    });
-                    const lines = result.data.text.split('\n');
-                    ocrTextContainer.innerHTML = ''; // Clear previous content
-
-                    // Create clickable lines
-                    lines.forEach((line, index) => {
-                        const lineElement = document.createElement('div');
-                        lineElement.textContent = line;
-                        lineElement.className = 'line';
-                        lineElement.dataset.index = index;
-
-                        // Add click event for highlighting
-                        lineElement.addEventListener('click', () => {
-                            if (lineElement.classList.toggle('highlighted')) {
-                                highlightedLines.push(line);
-                            } else {
-                                highlightedLines = highlightedLines.filter(l => l !== line);
-                            }
-                        });
-
-                        ocrTextContainer.appendChild(lineElement);
-                    });
-
-                    saveButton.disabled = false;
-                };
-                reader.readAsDataURL(file);
-            } catch (error) {
-                console.error(error);
-                ocrTextContainer.textContent = 'An error occurred while processing the file.';
-            }
-        });
-
-        // Save highlighted lines to Google Drive
-        document.getElementById('saveButton').addEventListener('click', async () => {
-            if (highlightedLines.length === 0) {
-                alert('Please highlight some text to save.');
-                return;
-            }
-
-            const content = highlightedLines.join('\n');
-            const file = new Blob([content], { type: 'text/plain' });
+        async function saveToGoogleDrive(content, filename) {
+            const accessToken = gapi.auth.getToken().access_token;
             const metadata = {
-                name: 'Highlighted_Text.txt',
-                mimeType: 'text/plain',
+                name: filename,
+                mimeType: 'text/html',
             };
 
-            const accessToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
-            const form = new FormData();
-            form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-            form.append('file', file);
+            const file = new Blob([content], { type: 'text/html' });
+            const formData = new FormData();
+            formData.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+            formData.append('file', file);
 
-            try {
-                const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
-                    method: 'POST',
-                    headers: new Headers({ Authorization: `Bearer ${accessToken}` }),
-                    body: form,
-                });
-
+            await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+                method: 'POST',
+                headers: new Headers({ Authorization: 'Bearer ' + accessToken }),
+                body: formData,
+            }).then((response) => {
                 if (response.ok) {
-                    alert('Highlighted text saved to Google Drive successfully!');
+                    alert('File saved to Google Drive!');
                 } else {
-                    console.error('Drive API error:', await response.json());
-                    alert('Failed to save text to Google Drive.');
+                    alert('Failed to save file to Google Drive.');
                 }
-            } catch (error) {
-                console.error('Error uploading file:', error);
-                alert('An error occurred while saving to Drive.');
+            });
+        }
+
+        fileInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async () => {
+                    const image = reader.result;
+                    ocrOutput.textContent = 'Processing...';
+
+                    // Perform OCR using Tesseract.js
+                    try {
+                        const result = await Tesseract.recognize(image, 'eng', {
+                            logger: (info) => console.log(info), // Log progress
+                        });
+                        ocrOutput.textContent = result.data.text; // Populate editable section
+                    } catch (error) {
+                        ocrOutput.textContent = 'Error processing file. Please try again.';
+                        console.error(error);
+                    }
+                };
+                reader.readAsDataURL(file);
             }
         });
 
-        initGoogleAPI();
+        // Highlight text on selection
+        ocrOutput.addEventListener('mouseup', () => {
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                const span = document.createElement('span');
+                span.style.backgroundColor = 'yellow';
+                range.surroundContents(span);
+            }
+        });
+
+        saveButton.addEventListener('click', () => {
+            const highlightedText = ocrOutput.innerHTML;
+            if (highlightedText) {
+                gapi.auth2.getAuthInstance().signIn().then(() => {
+                    saveToGoogleDrive(highlightedText, 'highlighted_text.html');
+                });
+            } else {
+                alert('No text to save!');
+            }
+        });
+
+        // Load the Google API client
+        gapiLoad();
     </script>
 </body>
 </html>
